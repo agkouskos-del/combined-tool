@@ -751,7 +751,7 @@ NEGATIVE (ref only): ${buildNegative()}` });
       </div>
 
       {/* ── Layout ── */}
-      <div style={{ display: "flex", maxWidth: "1180px", margin: "0 auto" }}>
+      <div style={{ display: "flex", width: "100%" }}>
 
         {/* ── Sidebar: vertical nav rail + panel ── */}
         <div style={{ display: "flex", flexShrink: 0, borderRight: `1px solid ${T.divider}`, minHeight: "calc(100vh - 54px)" }}>
