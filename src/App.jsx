@@ -27,7 +27,7 @@ export default function App() {
       }}>
         {[
           { id: "demon",  label: "😈 Demon Labz — Image Gen" },
-          { id: "apsogo", label: "🌿 Apsogo Generator" },
+          { id: "apsogo", label: "🍅 APS - Tomato Products" },
         ].map(tab => (
           <button
             key={tab.id}
