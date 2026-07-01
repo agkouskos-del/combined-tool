@@ -10,8 +10,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@demon': path.resolve('D:/combined-tool/src/AppDemon.jsx'),
-      '@apsogo': path.resolve('D:/combined-tool/src/AppApsogo.jsx'),
+      '@demon': path.resolve(__dirname, 'src/AppDemon.jsx'),
+      '@apsogo': path.resolve(__dirname, 'src/AppApsogo.jsx'),
     },
   },
 });
