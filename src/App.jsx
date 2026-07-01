@@ -26,7 +26,7 @@ export default function App() {
         zIndex: 1000,
       }}>
         {[
-          { id: "demon",  label: "😈 Demon Labz — Image Gen" },
+          { id: "demon",  label: "😈 Demon Labz" },
           { id: "apsogo", label: "🍅 APS - Tomato Products" },
         ].map(tab => (
           <button
