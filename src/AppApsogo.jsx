@@ -16,15 +16,15 @@ const SKUS = [
 ];
 
 const MODELS = [
-  { id: "gpt_image_2",       label: "GPT Image 2",                   icon: "openai",  note: "" },
-  { id: "gpt_image_15",      label: "GPT Image 1.5",                 icon: "openai",  note: "" },
-  { id: "gemini_31_nano2",   label: "Gemini 3.1",                    icon: "google",  note: "w/ Nano Banana 2" },
-  { id: "gemini_3_pro",      label: "Gemini 3",                      icon: "google",  note: "w/ Nano Banana Pro" },
-  { id: "gemini_25_nano",    label: "Gemini 2.5",                    icon: "google",  note: "w/ Nano Banana" },
-  { id: "flux2_pro",         label: "FLUX.2 [pro]",                  icon: "flux",    note: "" },
-  { id: "flux1_kontext",     label: "FLUX.1 Kontext [max]",          icon: "flux",    note: "" },
-  { id: "gpt_image_1",       label: "GPT Image 1",                   icon: "openai",  note: "" },
-  { id: "flux11_ultra_raw",  label: "FLUX1.1 [pro] Ultra Raw",       icon: "flux",    note: "" },
+  { id: "gpt_image_2",       label: "GPT Image 2",                   icon: "openai",  note: "",                   hasNegative: false },
+  { id: "gpt_image_15",      label: "GPT Image 1.5",                 icon: "openai",  note: "",                   hasNegative: false },
+  { id: "gemini_31_nano2",   label: "Gemini 3.1",                    icon: "google",  note: "w/ Nano Banana 2",   hasNegative: false },
+  { id: "gemini_3_pro",      label: "Gemini 3",                      icon: "google",  note: "w/ Nano Banana Pro", hasNegative: false },
+  { id: "gemini_25_nano",    label: "Gemini 2.5",                    icon: "google",  note: "w/ Nano Banana",     hasNegative: false },
+  { id: "flux2_pro",         label: "FLUX.2 [pro]",                  icon: "flux",    note: "",                   hasNegative: true  },
+  { id: "flux1_kontext",     label: "FLUX.1 Kontext [max]",          icon: "flux",    note: "",                   hasNegative: true  },
+  { id: "gpt_image_1",       label: "GPT Image 1",                   icon: "openai",  note: "",                   hasNegative: false },
+  { id: "flux11_ultra_raw",  label: "FLUX1.1 [pro] Ultra Raw",       icon: "flux",    note: "",                   hasNegative: true  },
 ];
 
 const MODEL_PROMPTING = {
@@ -531,34 +531,27 @@ ${FLUX_MODELS.has(activeModel) ? `Output EXACTLY two lines. Line 1 starts with "
       `}</style>
 
       {/* ── SIDEBAR ── */}
-      <div style={{ width: "216px", minWidth: "216px", background: C.sidebar, borderRight: `1px solid ${C.border}`, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+      <div style={{ width: "216px", minWidth: "216px", background: C.sidebar, borderRight: `1px solid ${C.border}`, display: "flex", flexDirection: "column", overflow: "hidden", height: "calc(100vh - 54px)", position: "sticky", top: "54px", alignSelf: "flex-start" }}>
 
         {/* MODEL SELECTOR */}
         <div style={{ padding: "14px 14px 10px", borderBottom: `1px solid ${C.border}`, fontSize: "10px", fontWeight: "700", letterSpacing: "0.12em", color: C.textMuted, textTransform: "uppercase" }}>
           MODEL
         </div>
         <div style={{ padding: "6px", borderBottom: `1px solid ${C.border}` }}>
-          {MODELS.map(m => (
-            <div
-              key={m.id}
-              onClick={() => setActiveModel(m.id)}
-              style={{
-                display: "flex", alignItems: "center", gap: "8px",
-                padding: "7px 10px", borderRadius: "6px",
-                background: activeModel === m.id ? C.accentDim : "transparent",
-                border: activeModel === m.id ? `1px solid ${C.accent}` : "1px solid transparent",
-                cursor: "pointer", marginBottom: "1px", transition: "all 0.15s",
-              }}
-            >
-              <ModelIcon type={m.icon} />
-              <div style={{ display: "flex", flexDirection: "column", gap: "1px", minWidth: 0 }}>
-                <span style={{ fontSize: "11.5px", fontWeight: activeModel === m.id ? "600" : "400", color: activeModel === m.id ? "#fff" : C.text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                  {m.label}
-                </span>
-                {m.note && <span style={{ fontSize: "9.5px", color: C.textDim }}>{m.note}</span>}
+          {MODELS.map(m => {
+            const mColor = m.icon === "openai" ? "#34d399" : m.icon === "google" ? "#60a5fa" : "#fbbf24";
+            const isActive = activeModel === m.id;
+            return (
+              <div key={m.id} onClick={() => setActiveModel(m.id)}
+                style={{ display: "flex", alignItems: "center", gap: "9px", padding: "6px 10px", borderRadius: "6px", cursor: "pointer", marginBottom: "1px", transition: "all 0.15s", background: isActive ? mColor + "18" : "transparent", border: `1px solid ${isActive ? mColor + "55" : "transparent"}` }}>
+                <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: mColor, flexShrink: 0, opacity: isActive ? 1 : 0.45 }} />
+                <div style={{ display: "flex", flexDirection: "column", gap: "1px", minWidth: 0 }}>
+                  <span style={{ fontSize: "11px", fontWeight: isActive ? "600" : "400", color: isActive ? "#fff" : C.text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{m.label}</span>
+                  <span style={{ fontSize: "8.5px", color: C.textDim }}>{m.note || (m.hasNegative ? "POS + NEG" : "INLINE")}</span>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* SKU LIST */}
@@ -566,33 +559,25 @@ ${FLUX_MODELS.has(activeModel) ? `Output EXACTLY two lines. Line 1 starts with "
           APSOGO SKU
         </div>
         <div style={{ overflowY: "auto", flex: 1, padding: "6px" }}>
-          {SKUS.map(sku => (
-            <div
-              key={sku.id}
-              onClick={() => setActiveSku(sku.id)}
-              style={{
-                display: "flex", alignItems: "center", gap: "9px",
-                padding: "7px 8px", borderRadius: "7px",
-                background: activeSku === sku.id ? C.accentDim : "transparent",
-                border: activeSku === sku.id ? `1px solid ${C.accent}` : "1px solid transparent",
-                cursor: "pointer", marginBottom: "2px", transition: "all 0.15s",
-              }}
-            >
-              {sku.thumb ? (
-                <img src={sku.thumb} alt="" style={{ width: "32px", height: "42px", objectFit: "contain", borderRadius: "3px", flexShrink: 0, background: "#111" }} />
-              ) : (
-                <div style={{ width: "32px", height: "42px", borderRadius: "3px", background: C.border, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <span style={{ fontSize: "16px", opacity: 0.4 }}>🍅</span>
+          {SKUS.map(sku => {
+            const isActive = activeSku === sku.id;
+            return (
+              <div key={sku.id} onClick={() => setActiveSku(sku.id)}
+                style={{ display: "flex", alignItems: "center", gap: "9px", padding: "6px 8px", borderRadius: "6px", background: isActive ? C.accentDim : "transparent", border: `1px solid ${isActive ? C.accent : "transparent"}`, cursor: "pointer", marginBottom: "2px", transition: "all 0.15s" }}>
+                {sku.thumb ? (
+                  <img src={sku.thumb} alt="" style={{ width: "28px", height: "38px", objectFit: "contain", borderRadius: "3px", flexShrink: 0, background: "#111" }} />
+                ) : (
+                  <div style={{ width: "28px", height: "38px", borderRadius: "3px", background: C.border, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <span style={{ fontSize: "14px", opacity: 0.4 }}>🍅</span>
+                  </div>
+                )}
+                <div style={{ display: "flex", flexDirection: "column", gap: "1px", minWidth: 0 }}>
+                  <span style={{ fontSize: "11px", fontWeight: isActive ? "600" : "400", color: isActive ? "#fff" : C.text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{sku.label}</span>
+                  {sku.sub && <span style={{ fontSize: "8.5px", color: C.textDim, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{sku.sub}</span>}
                 </div>
-              )}
-              <div style={{ display: "flex", flexDirection: "column", gap: "1px", minWidth: 0 }}>
-                <span style={{ fontSize: "11.5px", fontWeight: activeSku === sku.id ? "600" : "400", color: activeSku === sku.id ? "#fff" : C.text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                  {sku.label}
-                </span>
-                {sku.sub && <span style={{ fontSize: "10px", color: C.textDim, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{sku.sub}</span>}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
         {activeSKU && (
           <div style={{ padding: "12px", borderTop: `1px solid ${C.border}`, fontSize: "11px" }}>
@@ -600,6 +585,16 @@ ${FLUX_MODELS.has(activeModel) ? `Output EXACTLY two lines. Line 1 starts with "
             <div style={{ color: C.text }}>{activeSKU.sub || "custom format"}</div>
           </div>
         )}
+
+        {/* ── Footer: LORA + DATA PREP ── */}
+        <div style={{ borderTop: `1px solid ${C.border}`, padding: "8px 10px", display: "flex", gap: "6px", flexShrink: 0, marginTop: "auto" }}>
+          <button style={{ flex: 1, padding: "7px 6px", borderRadius: "6px", cursor: "default", fontSize: "8.5px", fontWeight: "700", letterSpacing: "0.06em", background: "#18181b", border: `1px solid ${C.border}`, color: "#52525b" }}>
+            ⚙ LORA
+          </button>
+          <button style={{ flex: 1, padding: "7px 6px", borderRadius: "6px", cursor: "default", fontSize: "8.5px", fontWeight: "700", letterSpacing: "0.06em", background: "#18181b", border: `1px solid ${C.border}`, color: "#52525b" }}>
+            📁 DATA
+          </button>
+        </div>
       </div>
 
       {/* ── MAIN ── */}
