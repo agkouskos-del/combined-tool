@@ -481,8 +481,19 @@ ${FLUX_MODELS.has(activeModel) ? `Output EXACTLY two lines. Line 1 starts with "
           messages: [{ role: "user", content: userContent }],
         }),
       });
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => ({}));
+        const code = errBody?.error?.type || `HTTP ${res.status}`;
+        const msg  = errBody?.error?.message || res.statusText;
+        setOutput(`Error [${code}]: ${msg}`);
+        return;
+      }
       const data = await res.json();
-      const text = data.content?.map(b => b.text || "").join("") || "Error.";
+      if (data.error) {
+        setOutput(`Error [${data.error.type}]: ${data.error.message}`);
+        return;
+      }
+      const text = data.content?.map(b => b.text || "").join("") || "Error: empty response from API.";
       if (FLUX_MODELS.has(activeModel)) {
         const posMatch = text.match(/POSITIVE:\s*(.+?)(?=NEGATIVE:|$)/si);
         const negMatch = text.match(/NEGATIVE:\s*(.+)/si);
